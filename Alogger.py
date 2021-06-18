@@ -10,6 +10,7 @@
 # Imports
 # =============================================================================
 import inspect
+import os
 
 
 class LogLevel:
@@ -37,7 +38,7 @@ class Term:
 
 
 class Alogger:
-    def __init__(self, log_level=LogLevel.ERROR, log_to_file=False, log_name=None) -> None:
+    def __init__(self, path: str, log_level=LogLevel.ERROR, log_to_file=False, log_name=None) -> None:
         """Constructor of Alogger class.
 
         Args:
@@ -49,8 +50,12 @@ class Alogger:
         frame = caller[0]
         info = inspect.getframeinfo(frame)
         self.caller_filename = f"{inspect.stack()[1].filename.split('.py')[0]}"
+        if os.name == "nt":
+            self.caller_filename = self.caller_filename.split("\\")[-1]
+        elif os.name == "posix":
+            self.caller_filename = self.caller_filename.split("/")[-1]
         self.caller_lineno = info.lineno
-
+        self.path = path
         self.log_level = log_level
         self.log_to_file = log_to_file
         if log_to_file:
@@ -58,10 +63,14 @@ class Alogger:
                 self.log_name = log_name
             else:
                 self.log_name = f"{self.caller_filename}.log.html"
+                if os.name == "nt":
+                    self.log_name = self.log_name.split("\\")[-1]
+                elif os.name == "posix":
+                    self.log_name = self.log_name.split("/")[-1]
 
     def fatal(self, *messages) -> None:
         if self.log_level <= LogLevel.FATAL:
-            caller = f"@file: {self.caller_filename}.py @function: {inspect.stack()[1][3]} @line: {self.caller_lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
             messages = [str(message) for message in messages]
             print(
                 f"{Term.REVERSE}{Term.RED}FATAL: {' '.join(messages)}. {caller}{Term.CLEAR}")
@@ -70,7 +79,7 @@ class Alogger:
 
     def error(self, *messages) -> None:
         if self.log_level <= LogLevel.ERROR:
-            caller = f"@file: {self.caller_filename}.py @function: {inspect.stack()[1][3]} @line: {self.caller_lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
             messages = [str(message) for message in messages]
             print(
                 f"{Term.RED}{Term.BOLD}ERROR: {' '.join(messages)}. {caller}{Term.CLEAR}")
@@ -79,7 +88,7 @@ class Alogger:
 
     def warning(self, *messages) -> None:
         if self.log_level <= LogLevel.WARNING:
-            caller = f"@file: {self.caller_filename}.py @function: {inspect.stack()[1][3]} @line: {self.caller_lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
             messages = [str(message) for message in messages]
             print(
                 f"{Term.YELLOW}{Term.BOLD}WARNING: {' '.join(messages)}. {caller}{Term.CLEAR}")
@@ -88,7 +97,7 @@ class Alogger:
 
     def info(self, *messages) -> None:
         if self.log_level <= LogLevel.INFO:
-            caller = f"@file: {self.caller_filename}.py @function: {inspect.stack()[1][3]} @line: {self.caller_lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
             messages = [str(message) for message in messages]
             print(
                 f"{Term.GREEN}{Term.BOLD}INFO: {' '.join(messages)}. {caller}{Term.CLEAR}")
@@ -97,7 +106,7 @@ class Alogger:
 
     def debug(self, *messages) -> None:
         if self.log_level <= LogLevel.DEBUG:
-            caller = f"@file: {self.caller_filename}.py @function: {inspect.stack()[1][3]} @line: {self.caller_lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
             messages = [str(message) for message in messages]
             print(
                 f"{Term.BLUE}{Term.BOLD}DEBUG: {' '.join(messages)}. {caller}{Term.CLEAR}")
@@ -106,7 +115,7 @@ class Alogger:
 
     def trace(self, *messages) -> None:
         if self.log_level <= LogLevel.TRACE:
-            caller = f"@file: {self.caller_filename}.py @function: {inspect.stack()[1][3]} @line: {self.caller_lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
             messages = [str(message) for message in messages]
             print(
                 f"{Term.PURPLE}{Term.BOLD}TRACE: {' '.join(messages)}. {caller}{Term.CLEAR}")
@@ -115,7 +124,7 @@ class Alogger:
 
     def test(self, *messages) -> None:
         if self.log_level <= LogLevel.TEST:
-            caller = f"@file: {self.caller_filename}.py @function: {inspect.stack()[1][3]} @line: {self.caller_lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
             messages = [str(message) for message in messages]
             print(
                 f"{Term.REVERSE}{Term.BOLD}TEST: {' '.join(messages)}. {caller}{Term.CLEAR}")
@@ -124,5 +133,6 @@ class Alogger:
 
     def writeToFile(self, message: str):
         if self.log_to_file:
+            os.chdir(self.path)
             with open(self.log_name, "a+") as file:
                 file.write(f"{message}\n")
