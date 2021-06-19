@@ -14,7 +14,7 @@ with open(README_PATH, "r", encoding="utf-8") as file:
 
 
 setup(
-    name="Alogger",
+    name="AloggerPy",
     version=VERSION,
     license="Apache Software License 2.0",
     description="Python colored logger module",
@@ -56,16 +56,16 @@ setup(
         "Issue Tracker": "https://github.com/ahmetkkn07/Alogger/issues",
     },
     keywords=[],
-    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
-    install_requires=["requests"],  # Bağlı olduğu paketler, örn: requests
+    # python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
+    # install_requires=["requests"],  # Bağlı olduğu paketler, örn: requests
     extras_require={
         # eg:
         #   "rst": ["docutils>=0.11"],
         #   ":python_version=="2.6"": ["argparse"],
     },
-    setup_requires=[
-        "pytest-runner",
-    ],
+    # setup_requires=[
+    #     "pytest-runner",
+    # ],
     entry_points={
         # Komut isteminden çalıştırma
         # örndeğin: ypackage
