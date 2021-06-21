@@ -54,7 +54,6 @@ class Alogger:
             self.caller_filename = self.caller_filename.split("\\")[-1]
         elif os.name == "posix":
             self.caller_filename = self.caller_filename.split("/")[-1]
-        self.caller_lineno = info.lineno
         if path != "":
             self.path = path
         else:
@@ -73,7 +72,10 @@ class Alogger:
 
     def fatal(self, *messages) -> None:
         if self.log_level <= LogLevel.FATAL:
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
+            caller = inspect.stack()[1]  # 0 represents this line
+            frame = caller[0]
+            info = inspect.getframeinfo(frame)
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
@@ -83,7 +85,10 @@ class Alogger:
 
     def error(self, *messages) -> None:
         if self.log_level <= LogLevel.ERROR:
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
+            caller = inspect.stack()[1]  # 0 represents this line
+            frame = caller[0]
+            info = inspect.getframeinfo(frame)
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
@@ -93,7 +98,10 @@ class Alogger:
 
     def warning(self, *messages) -> None:
         if self.log_level <= LogLevel.WARNING:
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
+            caller = inspect.stack()[1]  # 0 represents this line
+            frame = caller[0]
+            info = inspect.getframeinfo(frame)
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
@@ -103,7 +111,10 @@ class Alogger:
 
     def info(self, *messages) -> None:
         if self.log_level <= LogLevel.INFO:
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
+            caller = inspect.stack()[1]  # 0 represents this line
+            frame = caller[0]
+            info = inspect.getframeinfo(frame)
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
@@ -113,7 +124,10 @@ class Alogger:
 
     def debug(self, *messages) -> None:
         if self.log_level <= LogLevel.DEBUG:
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
+            caller = inspect.stack()[1]  # 0 represents this line
+            frame = caller[0]
+            info = inspect.getframeinfo(frame)
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
@@ -123,7 +137,10 @@ class Alogger:
 
     def trace(self, *messages) -> None:
         if self.log_level <= LogLevel.TRACE:
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
+            caller = inspect.stack()[1]  # 0 represents this line
+            frame = caller[0]
+            info = inspect.getframeinfo(frame)
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
@@ -133,7 +150,10 @@ class Alogger:
 
     def test(self, *messages) -> None:
         if self.log_level <= LogLevel.TEST:
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{self.caller_lineno}"
+            caller = inspect.stack()[1]  # 0 represents this line
+            frame = caller[0]
+            info = inspect.getframeinfo(frame)
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
