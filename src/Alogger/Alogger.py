@@ -5,12 +5,12 @@
 # Email       : ahmetkkn07@gmail.com
 # GitHub      : https://github.com/ahmetkkn07
 # =============================================================================
-"""The Module Python3.6+ Compatible"""
+"""Colored custom logger module by ahmetkkn07 (Python3.6+ Compatible)"""
 # =============================================================================
 # Imports
 # =============================================================================
-import inspect
 import os
+import inspect
 
 
 class LogLevel:
@@ -46,9 +46,6 @@ class Alogger:
             log_to_file (bool, optional): Set True if you want to save logs to file. Defaults to False.
             log_name (str, optional): Custom file name for log file. Defaults to caller filename.
         """
-        caller = inspect.stack()[1]  # 0 represents this line
-        frame = caller[0]
-        info = inspect.getframeinfo(frame)
         self.caller_filename = f"{inspect.stack()[1].filename.split('.py')[0]}"
         if os.name == "nt":
             self.caller_filename = self.caller_filename.split("\\")[-1]
@@ -81,7 +78,7 @@ class Alogger:
             print(
                 f"{Term.REVERSE}{Term.RED}FATAL: {' '.join(messages)}. {caller}{Term.CLEAR}")
             message = f'<div style="background-color:#FF5C57; color: #282A36;">FATAL: {" ".join(messages)}. {caller}</div>'
-            self.writeToFile(message)
+            self._write_to_file(message)
 
     def error(self, *messages) -> None:
         if self.log_level <= LogLevel.ERROR:
@@ -94,7 +91,7 @@ class Alogger:
             print(
                 f"{Term.RED}{Term.BOLD}ERROR: {' '.join(messages)}. {caller}{Term.CLEAR}")
             message = f'<div style="background-color:#282A36; color: #FF5C57;">ERROR: {" ".join(messages)}. {caller}</div>'
-            self.writeToFile(message)
+            self._write_to_file(message)
 
     def warning(self, *messages) -> None:
         if self.log_level <= LogLevel.WARNING:
@@ -107,7 +104,7 @@ class Alogger:
             print(
                 f"{Term.YELLOW}{Term.BOLD}WARNING: {' '.join(messages)}. {caller}{Term.CLEAR}")
             message = f'<div style="background-color:#282A36; color: #ECF299;">WARNING: {" ".join(messages)}. {caller}</div>'
-            self.writeToFile(message)
+            self._write_to_file(message)
 
     def info(self, *messages) -> None:
         if self.log_level <= LogLevel.INFO:
@@ -120,7 +117,7 @@ class Alogger:
             print(
                 f"{Term.GREEN}{Term.BOLD}INFO: {' '.join(messages)}. {caller}{Term.CLEAR}")
             message = f'<div style="background-color:#282A36; color: #58F18B;">INFO: {" ".join(messages)}. {caller}</div>'
-            self.writeToFile(message)
+            self._write_to_file(message)
 
     def debug(self, *messages) -> None:
         if self.log_level <= LogLevel.DEBUG:
@@ -133,7 +130,7 @@ class Alogger:
             print(
                 f"{Term.BLUE}{Term.BOLD}DEBUG: {' '.join(messages)}. {caller}{Term.CLEAR}")
             message = f'<div style="background-color:#282A36; color: #53BBF0;">DEBUG: {" ".join(messages)}. {caller}</div>'
-            self.writeToFile(message)
+            self._write_to_file(message)
 
     def trace(self, *messages) -> None:
         if self.log_level <= LogLevel.TRACE:
@@ -146,7 +143,7 @@ class Alogger:
             print(
                 f"{Term.PURPLE}{Term.BOLD}TRACE: {' '.join(messages)}. {caller}{Term.CLEAR}")
             message = f'<div style="background-color:#282A36; color: #F566BA;">TRACE: {" ".join(messages)}. {caller}</div>'
-            self.writeToFile(message)
+            self._write_to_file(message)
 
     def test(self, *messages) -> None:
         if self.log_level <= LogLevel.TEST:
@@ -159,9 +156,9 @@ class Alogger:
             print(
                 f"{Term.REVERSE}{Term.BOLD}TEST: {' '.join(messages)}. {caller}{Term.CLEAR}")
             message = f'<div style="background-color:#CCCCCC; color: #282A36;">TEST: {" ".join(messages)}. {caller}</div>'
-            self.writeToFile(message)
+            self._write_to_file(message)
 
-    def writeToFile(self, message: str):
+    def _write_to_file(self, message: str):
         if self.log_to_file:
             os.chdir(self.path)
             with open(self.log_name, "a+") as file:
