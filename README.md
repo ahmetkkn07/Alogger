@@ -3,8 +3,8 @@
 ### Usage
 
 ```
-from Alogger import Alogger, LogLevel
-logger = Alogger(log_level=LogLevel.ALL, log_to_file=True)
+from Alogger import Alogger
+logger = Alogger.Alogger(log_level=Alogger.LogLevel.ALL, log_to_file=False)
 
 logger.fatal("fatal")
 logger.error("error")
