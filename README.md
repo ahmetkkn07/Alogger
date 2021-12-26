@@ -4,7 +4,7 @@
 
 ```
 from Alogger import Alogger
-logger = Alogger.Alogger(log_level=Alogger.LogLevel.ALL, log_to_file=False)
+logger = Alogger.Alogger(log_level=Alogger.LogLevel.ALL, log_to_file=True, log_file_type="txt")
 
 logger.fatal("fatal")
 logger.error("error")

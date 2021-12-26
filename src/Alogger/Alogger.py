@@ -38,14 +38,28 @@ class Term:
 
 
 class Alogger:
-    def __init__(self, path="", log_level=LogLevel.ERROR, log_to_file=False, log_name=None) -> None:
+    def __init__(
+        self,
+        path="",
+        log_level=LogLevel.ALL,
+        log_to_file=True,
+        log_name=None,
+        log_file_type="txt"
+    ) -> None:
         """Constructor of Alogger class.
 
         Args:
-            log_level (LogLevel, optional): Set level to log. Defaults to .
-            log_to_file (bool, optional): Set True if you want to save logs to file. Defaults to False.
-            log_name (str, optional): Custom file name for log file. Defaults to caller filename.
+            log_level (LogLevel, optional): Set level to log. Defaults to ALL
+            log_to_file (bool, optional): Set True if you want to save logs
+                to file. Defaults to False.
+            log_name (str, optional): Custom file name for log file.
+                Defaults to caller filename.
+            log_file_type (str, optional): Type of file that saved logs.
+                Defaults to 'txt', can set to 'html'.
         """
+        self.log_level = log_level
+        self.log_to_file = log_to_file
+        self.log_file_type = log_file_type
         self.caller_filename = f"{inspect.stack()[1].filename.split('.py')[0]}"
         if os.name == "nt":
             self.caller_filename = self.caller_filename.split("\\")[-1]
@@ -55,29 +69,36 @@ class Alogger:
             self.path = path
         else:
             self.path = os.curdir
-        self.log_level = log_level
-        self.log_to_file = log_to_file
         if log_to_file:
             if log_name is not None:
                 self.log_name = log_name
             else:
-                self.log_name = f"{self.caller_filename}.log.html"
-                if os.name == "nt":
-                    self.log_name = self.log_name.split("\\")[-1]
-                elif os.name == "posix":
-                    self.log_name = self.log_name.split("/")[-1]
+                if log_file_type == "html":
+                    self.log_name = f"{self.caller_filename}_log.html"
+                    if os.name == "nt":
+                        self.log_name = self.log_name.split("\\")[-1]
+                    elif os.name == "posix":
+                        self.log_name = self.log_name.split("/")[-1]
+                elif log_file_type == "txt":
+                    self.log_name = f"{self.caller_filename}.log"
+                    if os.name == "nt":
+                        self.log_name = self.log_name.split("\\")[-1]
+                    elif os.name == "posix":
+                        self.log_name = self.log_name.split("/")[-1]
 
     def fatal(self, *messages) -> None:
         if self.log_level <= LogLevel.FATAL:
             caller = inspect.stack()[1]  # 0 represents this line
             frame = caller[0]
             info = inspect.getframeinfo(frame)
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:"\
+                + f"{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
-                f"{Term.REVERSE}{Term.RED}FATAL: {' '.join(messages)}. {caller}{Term.CLEAR}")
-            message = f'<div style="background-color:#FF5C57; color: #282A36;">FATAL: {" ".join(messages)}. {caller}</div>'
+                f"{Term.REVERSE}{Term.RED}FATAL: {' '.join(messages)}. "
+                + f"{caller}{Term.CLEAR}")
+            message = self._create_message(messages, caller, "FATAL")
             self._write_to_file(message)
 
     def error(self, *messages) -> None:
@@ -85,12 +106,14 @@ class Alogger:
             caller = inspect.stack()[1]  # 0 represents this line
             frame = caller[0]
             info = inspect.getframeinfo(frame)
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:"\
+                + f"{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
-                f"{Term.RED}{Term.BOLD}ERROR: {' '.join(messages)}. {caller}{Term.CLEAR}")
-            message = f'<div style="background-color:#282A36; color: #FF5C57;">ERROR: {" ".join(messages)}. {caller}</div>'
+                f"{Term.RED}{Term.BOLD}ERROR: {' '.join(messages)}. "
+                + f"{caller}{Term.CLEAR}")
+            message = self._create_message(messages, caller, "ERROR")
             self._write_to_file(message)
 
     def warning(self, *messages) -> None:
@@ -98,12 +121,14 @@ class Alogger:
             caller = inspect.stack()[1]  # 0 represents this line
             frame = caller[0]
             info = inspect.getframeinfo(frame)
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:"\
+                + f"{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
-                f"{Term.YELLOW}{Term.BOLD}WARNING: {' '.join(messages)}. {caller}{Term.CLEAR}")
-            message = f'<div style="background-color:#282A36; color: #ECF299;">WARNING: {" ".join(messages)}. {caller}</div>'
+                f"{Term.YELLOW}{Term.BOLD}WARNING: {' '.join(messages)}. "
+                + f"{caller}{Term.CLEAR}")
+            message = self._create_message(messages, caller, "WARNING")
             self._write_to_file(message)
 
     def info(self, *messages) -> None:
@@ -111,12 +136,14 @@ class Alogger:
             caller = inspect.stack()[1]  # 0 represents this line
             frame = caller[0]
             info = inspect.getframeinfo(frame)
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:"\
+                + f"{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
-                f"{Term.GREEN}{Term.BOLD}INFO: {' '.join(messages)}. {caller}{Term.CLEAR}")
-            message = f'<div style="background-color:#282A36; color: #58F18B;">INFO: {" ".join(messages)}. {caller}</div>'
+                f"{Term.GREEN}{Term.BOLD}INFO: {' '.join(messages)}. "
+                + f"{caller}{Term.CLEAR}")
+            message = self._create_message(messages, caller, "INFO")
             self._write_to_file(message)
 
     def debug(self, *messages) -> None:
@@ -124,12 +151,14 @@ class Alogger:
             caller = inspect.stack()[1]  # 0 represents this line
             frame = caller[0]
             info = inspect.getframeinfo(frame)
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:"\
+                + f"{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
-                f"{Term.BLUE}{Term.BOLD}DEBUG: {' '.join(messages)}. {caller}{Term.CLEAR}")
-            message = f'<div style="background-color:#282A36; color: #53BBF0;">DEBUG: {" ".join(messages)}. {caller}</div>'
+                f"{Term.BLUE}{Term.BOLD}DEBUG: {' '.join(messages)}. "
+                + f"{caller}{Term.CLEAR}")
+            message = self._create_message(messages, caller, "DEBUG")
             self._write_to_file(message)
 
     def trace(self, *messages) -> None:
@@ -137,12 +166,14 @@ class Alogger:
             caller = inspect.stack()[1]  # 0 represents this line
             frame = caller[0]
             info = inspect.getframeinfo(frame)
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:"\
+                + f"{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
-                f"{Term.PURPLE}{Term.BOLD}TRACE: {' '.join(messages)}. {caller}{Term.CLEAR}")
-            message = f'<div style="background-color:#282A36; color: #F566BA;">TRACE: {" ".join(messages)}. {caller}</div>'
+                f"{Term.PURPLE}{Term.BOLD}TRACE: {' '.join(messages)}. "
+                + f"{caller}{Term.CLEAR}")
+            message = self._create_message(messages, caller, "TRACE")
             self._write_to_file(message)
 
     def test(self, *messages) -> None:
@@ -150,16 +181,28 @@ class Alogger:
             caller = inspect.stack()[1]  # 0 represents this line
             frame = caller[0]
             info = inspect.getframeinfo(frame)
-            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:{info.lineno}"
+            caller = f"@{self.caller_filename}.{inspect.stack()[1][3]}:"\
+                + f"{info.lineno}"
             caller = caller.replace("<module>", "_")
             messages = [str(message) for message in messages]
             print(
-                f"{Term.REVERSE}{Term.BOLD}TEST: {' '.join(messages)}. {caller}{Term.CLEAR}")
-            message = f'<div style="background-color:#CCCCCC; color: #282A36;">TEST: {" ".join(messages)}. {caller}</div>'
+                f"{Term.REVERSE}{Term.BOLD}TEST: {' '.join(messages)}. "
+                + f"{caller}{Term.CLEAR}")
+            message = self._create_message(messages, caller, "TEST")
             self._write_to_file(message)
 
     def _write_to_file(self, message: str):
         if self.log_to_file:
             os.chdir(self.path)
             with open(self.log_name, "a+") as file:
-                file.write(f"{message}\n")
+                file.write(f"{message}\n\n")
+
+    def _create_message(self, messages, caller, log_type):
+        message = ""
+        if self.log_file_type == "html":
+            message = '<div style="background-color:#FF5C57; '\
+                + f'color: #282A36;">{log_type}: {" ".join(messages)}. '\
+                + f'{caller} < /div >'
+        elif self.log_file_type == "txt":
+            message = f'FATAL: {" ".join(messages)}. {caller}'
+        return message
