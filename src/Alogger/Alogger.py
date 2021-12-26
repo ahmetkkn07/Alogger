@@ -10,6 +10,7 @@
 # Imports
 # =============================================================================
 import os
+import datetime
 import inspect
 
 
@@ -198,11 +199,12 @@ class Alogger:
                 file.write(f"{message}\n\n")
 
     def _create_message(self, messages, caller, log_type):
+        now = datetime.datetime.now()
         message = ""
         if self.log_file_type == "html":
             message = '<div style="background-color:#FF5C57; '\
-                + f'color: #282A36;">{log_type}: {" ".join(messages)}. '\
+                + f'color: #282A36;">{now} {log_type}: {" ".join(messages)}. '\
                 + f'{caller} < /div >'
         elif self.log_file_type == "txt":
-            message = f'FATAL: {" ".join(messages)}. {caller}'
+            message = f'{now} {log_type}: {" ".join(messages)}. {caller}'
         return message
