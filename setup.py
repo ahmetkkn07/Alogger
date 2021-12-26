@@ -3,7 +3,7 @@ from os.path import basename, splitext
 
 from setuptools import find_packages, setup
 
-VERSION = "0.5.1"
+VERSION = "1.0"
 README_PATH = "./README.md"
 
 # test_requirements = ["behave", "behave-classy", "pytest"]
@@ -36,19 +36,13 @@ setup(
         "Operating System :: Unix",
         "Operating System :: POSIX",
         "Operating System :: Microsoft :: Windows",
-        "Programming Language :: Python",
-        # "Programming Language :: Python :: 2.7",
-        # "Programming Language :: Python :: 3",
-        # "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
-        # uncomment if you test on these interpreters:
-        # "Programming Language :: Python :: Implementation :: IronPython",
-        # "Programming Language :: Python :: Implementation :: Jython",
-        # "Programming Language :: Python :: Implementation :: Stackless",
         "Topic :: Utilities",
     ],
     project_urls={
